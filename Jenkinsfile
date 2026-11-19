@@ -34,10 +34,9 @@ pipeline {
                 // Start the app in the background and save its output to log files
                 powershell '''
                     $appDir = Join-Path $env:WORKSPACE 'app'
-                    Start-Process -FilePath 'npm.cmd' -ArgumentList 'start' -WorkingDirectory $appDir `
-                        -RedirectStandardOutput (Join-Path $env:WORKSPACE 'app.log') `
-                        -RedirectStandardError (Join-Path $env:WORKSPACE 'app-error.log') `
-                        -WindowStyle Hidden
+                    $log = Join-Path $env:WORKSPACE 'app.log'
+                    # Launch through cmd.exe so the app is fully detached from the Jenkins step
+                    Start-Process -FilePath 'cmd.exe' -ArgumentList "/c npm start > $log 2>&1" -WorkingDirectory $appDir -WindowStyle Hidden
                 '''
                 // Wait until the API and the web app answer (max 3 minutes)
                 powershell '''
