@@ -4,6 +4,8 @@ pipeline {
     environment {
         // Tells Playwright it is running in CI (enables retries, disables test.only)
         CI = 'true'
+        // Keep the MongoDB binary (~600 MB) in a fixed folder so it is downloaded only once
+        MONGOMS_DOWNLOAD_DIR = 'D:/tools/mongodb-binaries'
     }
 
     options {
@@ -38,9 +40,9 @@ pipeline {
                     # Launch through cmd.exe so the app is fully detached from the Jenkins step
                     Start-Process -FilePath 'cmd.exe' -ArgumentList "/c npm start > $log 2>&1" -WorkingDirectory $appDir -WindowStyle Hidden
                 '''
-                // Wait until the API and the web app answer (max 3 minutes)
+                // Wait until the API and the web app answer (max 10 minutes)
                 powershell '''
-                    $deadline = (Get-Date).AddMinutes(3)
+                    $deadline = (Get-Date).AddMinutes(10)
                     foreach ($url in @('http://localhost:3001/api/products', 'http://localhost:3000')) {
                         while ($true) {
                             try {
