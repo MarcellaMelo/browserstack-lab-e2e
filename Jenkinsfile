@@ -13,6 +13,11 @@ pipeline {
         timeout(time: 20, unit: 'MINUTES')
     }
 
+    triggers {
+        // Check GitHub for new commits every ~2 minutes and build if something changed
+        pollSCM('H/2 * * * *')
+    }
+
     stages {
         stage('Checkout app under test') {
             steps {
